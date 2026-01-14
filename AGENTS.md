@@ -53,9 +53,22 @@ There are currently no automated tests. Manual verification in Chrome is require
 ## 📁 Project Structure
 - `src/manifest.json`: Extension configuration.
 - `src/background/`: Service worker logic.
-- `src/content/`: Content scripts.
+- `src/content/`: Content scripts and parsing logic.
 - `src/popup/`: React-based popup UI.
-- `dist/`: Compiled extension output (load this into Chrome).
+- `dist/`: Compiled extension output.
+- `samples/`: HTML snippets and examples of target pages for parser verification.
+
+## 🔍 Scraping & Parsing
+
+### Target Sites
+- **ComicLink:** Primary target. Focus on `/auctions/preview.asp`.
+  - Selector: `#auctionData table table p b a`
+  - Data points: `itemId`, `title`, `link`, `grade`, `notes`, `ended`, `endTime`, `currentPrice`.
+
+### Parser Convention
+- Parsing logic must be isolated in `src/content/parser.js`.
+- Functions should be pure where possible, taking DOM elements or HTML strings as input.
+- Use the `samples/` directory to store real-world HTML examples for testing the parser.
 
 ## 🤖 AI Instructions
 - Always run `npm run build` after making changes to verify the build pipeline.

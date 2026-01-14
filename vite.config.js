@@ -10,7 +10,7 @@ export default defineConfig({
       input: {
         index: resolve(__dirname, 'src/index.html'),
         background: resolve(__dirname, 'src/background/background.js'),
-        content: resolve(__dirname, 'src/content/content.js'),
+        content: resolve(__dirname, 'src/content/content.jsx'),
       },
       output: {
         entryFileNames: (chunkInfo) => {

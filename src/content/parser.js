@@ -66,13 +66,16 @@ export function parseComic(link) {
     // End Time is in detailsTd
     // We look for the cell following the "Ends:" label
     let endTime = null;
+    let startTimeElem = null;
     const allTds = detailsTd.querySelectorAll('td');
     for (let i = 0; i < allTds.length; i++) {
+      if (allTds[i].innerText.includes('Starts:')) {
+        startTimeElem = allTds[i + 1];
+      }
       if (allTds[i].innerText.includes('Ends:')) {
         if (allTds[i + 1]) {
           endTime = allTds[i + 1].innerText.trim();
         }
-        break;
       }
     }
 
@@ -89,7 +92,8 @@ export function parseComic(link) {
       notes: notes,
       ended: ended,
       endTime: endTime,
-      currentPrice: currentPrice
+      currentPrice: currentPrice,
+      startTimeElem: startTimeElem
     };
   } catch (err) {
     console.error('Error parsing comic:', err);

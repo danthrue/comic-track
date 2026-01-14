@@ -27,13 +27,13 @@
   "content_scripts": [
     {
       "matches": ["*://*.comiclink.com/*"],
-      "js": ["content.js"]
+      "js": ["loader.js"]
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": ["assets/*"],
-      "matches": ["<all_urls>"]
+      "resources": ["assets/*", "content.js"],
+      "matches": ["*://*.comiclink.com/*"]
     }
   ]
 }

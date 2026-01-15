@@ -18,10 +18,16 @@ export function isSelected(itemId) {
   });
 }
 
-export function getSelectedComics() {
+export function getSelectedComics(query = '') {
   return new Promise((resolve) => {
-    chrome.runtime.sendMessage({ type: 'GET_SELECTED_COMICS' }, (response) => {
+    chrome.runtime.sendMessage({ type: 'GET_SELECTED_COMICS', query }, (response) => {
       resolve(response?.comics || []);
     });
+  });
+}
+
+export function updateComicField(itemId, field, value) {
+  return new Promise((resolve) => {
+    chrome.runtime.sendMessage({ type: 'UPDATE_COMIC_FIELD', itemId, field, value }, resolve);
   });
 }

@@ -55,8 +55,16 @@ export function parseComic(link) {
     // Notes are typically in the second <p> tag within the info area
     const pTags = infoTd.querySelectorAll('p');
     let notes = null;
+    let year = null;
     if (pTags.length > 1) {
       notes = pTags[1].innerText.trim();
+      
+      // Try to extract a 4-digit year between 1900 and 2099 from notes or title
+      // Usually years in comics are in parentheses or after the title, but notes often have it.
+      const yearMatch = (notes + ' ' + title).match(/\b(19\d{2}|20\d{2})\b/);
+      if (yearMatch) {
+        year = yearMatch[1];
+      }
     }
 
     // Current Price is in detailsTd within a span with id CurrentBid_ID
@@ -90,6 +98,7 @@ export function parseComic(link) {
       link: link.href,
       grade: grade,
       notes: notes,
+      year: year,
       ended: ended,
       endTime: endTime,
       currentPrice: currentPrice,
@@ -106,7 +115,8 @@ export function parseComic(link) {
  * @returns {Array} List of scraped comics
  */
 export function scrapePage() {
-  if (!window.location.pathname.toLowerCase().includes('/auctions/preview.asp')) {
+  if (!window.location.pathname.toLowerCase().includes('/auctions/preview.asp') && 
+      !window.location.pathname.toLowerCase().includes('/auctions/search.asp')) {
     return [];
   }
 

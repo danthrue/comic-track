@@ -81,7 +81,7 @@ async function isSelected(itemId) {
   });
 }
 
-async function getSelectedComics() {
+async function getSelectedComics(query = '') {
   const db = await openDB();
   return new Promise((resolve, reject) => {
     const selectedTx = db.transaction([SELECTED_STORE], 'readonly');
@@ -101,7 +101,15 @@ async function getSelectedComics() {
       const comics = await Promise.all(selectedItems.map(item => {
         return new Promise((res) => {
           const req = comicStore.get(item.itemId);
-          req.onsuccess = () => res(req.result);
+          req.onsuccess = () => {
+            const comic = req.result;
+            if (comic && query) {
+              const matches = comic.title.toLowerCase().includes(query.toLowerCase());
+              res(matches ? comic : null);
+            } else {
+              res(comic);
+            }
+          };
           req.onerror = () => res(null);
         });
       }));
@@ -110,6 +118,26 @@ async function getSelectedComics() {
     };
     
     getAllSelected.onerror = () => reject(getAllSelected.error);
+  });
+}
+
+async function updateComicField(itemId, field, value) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([COMICS_STORE], 'readwrite');
+    const store = transaction.objectStore(COMICS_STORE);
+    const getRequest = store.get(itemId);
+
+    getRequest.onsuccess = () => {
+      const comic = getRequest.result;
+      if (comic) {
+        comic[field] = value;
+        store.put(comic);
+      }
+    };
+
+    transaction.oncomplete = () => resolve();
+    transaction.onerror = () => reject(transaction.error);
   });
 }
 
@@ -127,7 +155,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
   if (message.type === 'GET_SELECTED_COMICS') {
-    getSelectedComics().then((comics) => sendResponse({ comics }));
+    getSelectedComics(message.query).then((comics) => sendResponse({ comics }));
+    return true;
+  }
+  if (message.type === 'UPDATE_COMIC_FIELD') {
+    updateComicField(message.itemId, message.field, message.value).then(() => sendResponse({ success: true }));
     return true;
   }
 });

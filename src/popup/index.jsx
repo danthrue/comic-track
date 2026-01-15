@@ -1,59 +1,28 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { MantineProvider, Text, Stack, Card, Group, Badge, ScrollArea, Anchor } from '@mantine/core';
+import { MantineProvider, Stack, Button, Group } from '@mantine/core';
 import '@mantine/core/styles.css';
-import { getSelectedComics } from '../content/db';
+import { ComicList } from '../components/ComicList';
 
 function App() {
-  const [selectedComics, setSelectedComics] = useState([]);
-
-  useEffect(() => {
-    async function loadComics() {
-      try {
-        const comics = await getSelectedComics();
-        setSelectedComics(comics);
-      } catch (err) {
-        console.error('Failed to load selected comics:', err);
-      }
+  const toggleSidePanel = async () => {
+    try {
+      const window = await chrome.windows.getCurrent();
+      await chrome.sidePanel.open({ windowId: window.id });
+    } catch (error) {
+      console.error('Failed to open side panel:', error);
     }
-    loadComics();
-  }, []);
+  };
 
   return (
     <MantineProvider defaultColorScheme="light">
       <Stack p="md" w={400} h={500}>
-        <Text size="xl" fw={700}>Tracked Auctions</Text>
-        
-        {selectedComics.length === 0 ? (
-          <Text size="sm" c="dimmed">No comics tracked yet. Star some on ComicLink!</Text>
-        ) : (
-          <ScrollArea h={400} offsetScrollbars>
-            <Stack gap="xs">
-              {selectedComics.map((comic) => (
-                <Card key={comic.itemId} withBorder padding="sm" radius="md">
-                  <Stack gap={4}>
-                    <Anchor href={comic.link} target="_blank" fw={600} size="sm" lineClamp={1}>
-                      {comic.title}
-                    </Anchor>
-                    
-                    <Group justify="space-between">
-                      <Badge color="blue" variant="light">
-                        {comic.grade?.provider} {comic.grade?.grade}
-                      </Badge>
-                      <Text fw={700} size="sm" c="green">
-                        {comic.currentPrice}
-                      </Text>
-                    </Group>
-                    
-                    <Text size="xs" c="dimmed">
-                      Ends: {comic.endTime}
-                    </Text>
-                  </Stack>
-                </Card>
-              ))}
-            </Stack>
-          </ScrollArea>
-        )}
+        <Group justify="space-between">
+          <Button variant="light" size="xs" onClick={toggleSidePanel}>
+            Open Side Panel
+          </Button>
+        </Group>
+        <ComicList height={400} />
       </Stack>
     </MantineProvider>
   );

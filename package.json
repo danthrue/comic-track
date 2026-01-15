@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && mv dist/src/index.html dist/index.html && rm -rf dist/src",
+    "build": "vite build && mv dist/src/index.html dist/index.html && mv dist/src/sidepanel.html dist/sidepanel.html && rm -rf dist/src",
     "preview": "vite preview",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
